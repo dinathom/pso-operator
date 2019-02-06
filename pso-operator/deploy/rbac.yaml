@@ -12,15 +12,6 @@ rules:
   - apiGroups:
     - ""
     resources:
-    - serviceaccounts
-    - persistentvolumeclaims
-    - persistentvolumes
-    - events
-    verbs:
-    - "*"
-  - apiGroups:
-    - ""
-    resources:
     - namespaces
     verbs:
     - get
@@ -29,30 +20,50 @@ rules:
     resources:
     - storageclasses
     verbs:
-    - "*"
+    - "create"
+    - "delete"
   - apiGroups:
     - rbac.authorization.k8s.io
     resources:
     - clusterrolebindings
     verbs:
-    - "*"
-
+    - "create"
+    - "delete"
+  - apiGroups:
+    - rbac.authorization.k8s.io
+    resources:
+    - clusterrolebindings
+    resourceNames:
+    - "pure-provisioner-rights"
+    verbs:
+    - "get"
 ---
-
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: default-account-pso-operator
+  name: pso-operator-role1
 subjects:
 - kind: ServiceAccount
-  name: pso-operator
+  name: default
+  namespace: NAMESPACE
+roleRef:
+  kind: ClusterRole
+  name: system:persistent-volume-provisioner
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: pso-operator-role2
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: NAMESPACE
 roleRef:
   kind: ClusterRole
   name: pso-operator
   apiGroup: rbac.authorization.k8s.io
-
 ---
-
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
@@ -95,17 +106,16 @@ rules:
     - daemonsets
     verbs:
     - "*"
-
 ---
-
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: default-account-pso-operator
 subjects:
 - kind: ServiceAccount
-  name: pso-operator
+  name: default
 roleRef:
   kind: Role
   name: pso-operator
   apiGroup: rbac.authorization.k8s.io
+
