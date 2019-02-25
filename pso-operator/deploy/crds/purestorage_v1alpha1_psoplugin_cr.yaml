@@ -1,0 +1,12 @@
+apiVersion: purestorage.com/v1alpha1
+kind: PSOPlugin
+metadata:
+  name: example-psoplugin
+spec:
+  # Add fields here
+  app:
+    debug: true
+  arrays:
+    FlashArrays:
+      - MgmtEndPoint: "1.2.3.4"
+        APIToken: "abcdefghiz"
